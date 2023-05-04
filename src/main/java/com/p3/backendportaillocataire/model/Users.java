@@ -1,10 +1,17 @@
 package com.p3.backendportaillocataire.model;
 
-import lombok.*;
-import org.springframework.security.core.userdetails.User;
-import org.springframework.security.core.userdetails.UserDetails;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
 
-import javax.persistence.*;
+import javax.persistence.Entity;
+import javax.persistence.Table;
+import javax.persistence.Id;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Column;
 import java.sql.Timestamp;
 
 @Builder
@@ -27,11 +34,4 @@ public class Users {
     private Timestamp updated_at;
     private String token;
 
-    UserDetails userDetails;
-
-    public static Users from(User user) {
-        Users userResource = new Users();
-        userResource.setUsername(user.getUsername());
-        return userResource;
-    }
 }
