@@ -1,83 +1,86 @@
 package com.p3.backendportaillocataire.controller;
 
-import com.p3.backendportaillocataire.configuration.controller.AuthController;
-import com.p3.backendportaillocataire.configuration.service.CustomUserDetailsService;
-import com.p3.backendportaillocataire.configuration.service.CustomerUserDetails;
 import com.p3.backendportaillocataire.configuration.service.TokenService;
-import com.p3.backendportaillocataire.model.Users;
+import com.p3.backendportaillocataire.model.*;
+import com.p3.backendportaillocataire.model.dto.UserDto;
 import com.p3.backendportaillocataire.service.UserService;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.security.authentication.AuthenticationManager;
+import io.swagger.annotations.Api;
 import org.springframework.security.authentication.AuthenticationProvider;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.AuthenticationException;
-import org.springframework.security.core.userdetails.User;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.oauth2.server.resource.authentication.AbstractOAuth2TokenAuthenticationToken;
-import org.springframework.security.oauth2.server.resource.authentication.OpaqueTokenAuthenticationProvider;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.server.ResponseStatusException;
+import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.multipart.MultipartHttpServletRequest;
 
-import java.security.Principal;
+import java.io.IOException;
 import java.util.List;
+import java.util.Optional;
 
+@Api("Api pour les operations d'informations")
 @RestController
-@RequestMapping("api/auth")
+@RequestMapping("api")
 public class UserController {
-
-        AuthController authController;
-        UserService userService;
-        CustomerUserDetails customerUserDetails;
-
-        CustomUserDetailsService customUserDetailsService;
-
         AuthenticationProvider authenticationProvider;
+
         TokenService tokenService;
 
-    @PostMapping("/signin")
-    public ResponseEntity<Users> login(@RequestBody Users resource){
+        UserService userService;
 
-        resource.setEmail(resource.getEmail());
-        resource.setPassword(resource.getPassword());
-
-        Users user = Users.builder().username(resource.getUsername()).build();
-
-        if (user == null){
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "USER_NOT_FOUND");
-        }
-        UsernamePasswordAuthenticationToken authenticationToken =
-                new UsernamePasswordAuthenticationToken(user.getUsername(), resource.getPassword(), List.of());
-
-        try{
-            authenticationProvider.authenticate(authenticationToken);
-            Users result = user;
-            result.setToken(this.tokenService.generateToken(authenticationToken));
-
-            return new ResponseEntity<>(result, HttpStatus.OK);
-        }catch (AuthenticationException e){
-            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED,
-            e.getMessage());
-        }
-    }
-    @GetMapping("/users")
-    public String getUsers(Authentication authentication){
-
-        return "Hello World";
+    public UserController(AuthenticationProvider authenticationProvider, TokenService tokenService, UserService userService) {
+        this.authenticationProvider = authenticationProvider;
+        this.tokenService = tokenService;
+        this.userService = userService;
     }
 
-    StringBuffer getUserNamePasswordLoginInfo(Principal user){
-        StringBuffer usernameInfo = new StringBuffer();
-        UsernamePasswordAuthenticationToken token = ((UsernamePasswordAuthenticationToken)user);
+    @CrossOrigin("*")
+    @GetMapping("/rentals")
+    public RentalsResponse getRentalsList(){
+       List<Rental> rentals = userService.findAllRentals();
+       Rental[] rentalToArray = rentals.toArray(new Rental[rentals.size()]);
+       return new RentalsResponse(rentalToArray);
+    }
 
-        if (token.isAuthenticated()){
-            User u = (User) token.getPrincipal();
-            usernameInfo.append("Welcome, "+ u.getUsername());
-        }else {
-            usernameInfo.append("NA");
-        }
-        return usernameInfo;
+    @CrossOrigin("*")
+    @GetMapping("rentals/{id}")
+    public Optional<Rental> getRentalsById(@PathVariable(name = "id") Integer rentalsId){
+        return userService.findRentalsById(rentalsId);
+    }
+    @CrossOrigin("*")
+    @PostMapping(value = "/rentals")
+    public RentalResponse createRentals(MultipartHttpServletRequest request) throws IOException {
 
+        String name = request.getParameter("name");
+        int surface = Integer.parseInt(request.getParameter("surface"));
+        int price = Integer.parseInt(request.getParameter("price"));
+        String description = request.getParameter("description");
+
+        MultipartFile picture = request.getFile("picture");
+
+        Rental rental = Rental.builder()
+                .name(name)
+                .surface(surface)
+                .price(price)
+                .description(description)
+                .picture("https://blog.technavio.org/wp-content/uploads/2018/12/"+picture.getOriginalFilename())
+                .build();
+        return userService.createRentals(rental);
+    }
+
+    @CrossOrigin("*")
+    @PutMapping("/rentals/{id}")
+    public RentalResponse updateRentals(@PathVariable(name = "id") Integer id, @RequestBody Rental rental) {
+        return userService.updateRentals(id, rental);
+    }
+
+    //messages
+    @CrossOrigin("*")
+    @PostMapping("/messages")
+    public MessageResponse getMessage(@RequestBody MessageRequest messageRequest){
+
+        return userService.requestMessage(messageRequest);
+    }
+    //user:id
+    @CrossOrigin("*")
+    @GetMapping("/user/{id}")
+    public Optional<UserDto> getUser(Users user){
+        return userService.getUserIdentity(user);
     }
 }
