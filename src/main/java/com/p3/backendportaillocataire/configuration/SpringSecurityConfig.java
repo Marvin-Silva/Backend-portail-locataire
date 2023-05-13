@@ -1,5 +1,6 @@
 package com.p3.backendportaillocataire.configuration;
 
+import com.nimbusds.jose.JOSEException;
 import com.nimbusds.jose.jwk.JWK;
 import com.nimbusds.jose.jwk.JWKSet;
 import com.nimbusds.jose.jwk.RSAKey;
@@ -23,6 +24,8 @@ import org.springframework.security.oauth2.jwt.NimbusJwtEncoder;
 import org.springframework.security.oauth2.server.resource.web.BearerTokenAuthenticationEntryPoint;
 import org.springframework.security.web.SecurityFilterChain;
 
+import java.text.ParseException;
+
 //@Configuration Indique à Spring Boot qu'il s'agit d'une classe de configuration
 //@EnableWebSecurity Permet spring à savoir où ce trouve la configuration Web
 @Configuration
@@ -39,7 +42,7 @@ public class SpringSecurityConfig {
     AuthenticationProvider authenticationProvider(){
         DaoAuthenticationProvider provider = new DaoAuthenticationProvider();
         provider.setUserDetailsService(userDetailsService);
-        provider.setPasswordEncoder(new BCryptPasswordEncoder());
+        provider.setPasswordEncoder(passwordEncoder());
         return provider;
     }
 
@@ -47,25 +50,31 @@ public class SpringSecurityConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
          http.csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests( auth -> auth
-                        .mvcMatchers("/token","/api/auth/register").permitAll()
+                        .antMatchers("/v2/api-docs","/swagger-ui/**","/swagger-resources/**", "/swagger-ui.html", "/webjars/springfox-swagger-ui/**").permitAll()
+                        .mvcMatchers("api/auth/token","api/auth/register","api/auth/login").permitAll()
                  .anyRequest().authenticated())
                  .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                  .oauth2ResourceServer(OAuth2ResourceServerConfigurer::jwt)
                  .exceptionHandling(ex->ex
-                         .authenticationEntryPoint(new BearerTokenAuthenticationEntryPoint()));
+                         .authenticationEntryPoint(new BearerTokenAuthenticationEntryPoint()))
+                         .authenticationProvider(authenticationProvider());
 
         return http.build();
     }
 
 
     @Bean
-    public JwtDecoder jwtDecoder(){return NimbusJwtDecoder.withPublicKey(rsaKeys.getPublicKey()).build();}
+    public JwtDecoder jwtDecoder() {return NimbusJwtDecoder.withPublicKey(rsaKeys.getPublicKey()).build();}
 
     @Bean
-    JwtEncoder jwtEncoder(){
+    JwtEncoder jwtEncoder() {
         JWK jwk = new RSAKey.Builder(rsaKeys.getPublicKey()).privateKey(rsaKeys.getPrivateKey()).build();
         JWKSource<SecurityContext> jwks = new ImmutableJWKSet<>(new JWKSet(jwk));
-
         return new NimbusJwtEncoder(jwks);
+    }
+
+    @Bean
+    BCryptPasswordEncoder passwordEncoder(){
+        return new BCryptPasswordEncoder();
     }
 }

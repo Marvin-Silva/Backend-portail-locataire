@@ -6,12 +6,7 @@ import lombok.Setter;
 import lombok.AllArgsConstructor;
 import lombok.RequiredArgsConstructor;
 
-import javax.persistence.Entity;
-import javax.persistence.Table;
-import javax.persistence.Id;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Column;
+import javax.persistence.*;
 import java.sql.Timestamp;
 
 @Builder
@@ -25,13 +20,16 @@ public class Users {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id")
     private Integer id;
+    @Column(name = "email")
     private String email;
     @Column(name = "name")
     private String username;
+    @Column(name = "password")
     private String password;
+    @Column(name = "created_at")
     private Timestamp created_at;
+    @Column(name = "updated_at")
     private Timestamp updated_at;
-    private String token;
-
 }
