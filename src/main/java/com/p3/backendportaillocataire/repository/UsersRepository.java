@@ -4,11 +4,9 @@ import com.p3.backendportaillocataire.model.Users;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
-import java.util.List;
-
 @Repository
-public interface UserRepository extends JpaRepository<Users, Integer> {
-    Users findByUsername(String username);
+public interface UsersRepository extends JpaRepository<Users, Integer> {
     Users findByEmail(String email);
-    Users findByUsernameAndPassword(String username, String password);
+
+    Users findByUsername(String username);
 }
