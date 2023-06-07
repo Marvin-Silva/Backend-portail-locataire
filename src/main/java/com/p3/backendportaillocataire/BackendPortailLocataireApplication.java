@@ -1,10 +1,10 @@
 package com.p3.backendportaillocataire;
+
 import com.p3.backendportaillocataire.configuration.RsaKeyProperties;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
 import springfox.documentation.builders.RequestHandlerSelectors;
 import springfox.documentation.spi.DocumentationType;
 import springfox.documentation.spring.web.plugins.Docket;
@@ -17,7 +17,6 @@ public class BackendPortailLocataireApplication {
 	public static void main(String[] args) {
 		SpringApplication.run(BackendPortailLocataireApplication.class, args);
 	}
-
 	@Bean
 	public Docket productApi(){
 		return new Docket(DocumentationType.SWAGGER_2).select()

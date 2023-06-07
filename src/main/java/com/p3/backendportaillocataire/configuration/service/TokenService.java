@@ -39,7 +39,8 @@ public class TokenService {
         this.authenticationProvider = authenticationProvider;
         this.userDetailsService = userDetailsService;
     }
-    public String generateToken(Users users){
+
+    public String generateToken(Users users) {
 
         Instant now = Instant.now();
         // Header access control
@@ -70,7 +71,7 @@ public class TokenService {
                 .created_at(Timestamp.from(Instant.now()))
                 .build();
 
-        if (buildUser.getEmail().isBlank() || buildUser.getUsername().isBlank() || buildUser.getPassword().isBlank()){
+        if (buildUser.getEmail().isBlank() || buildUser.getUsername().isBlank() || buildUser.getPassword().isBlank()) {
             throw new UserPrincipalNotFoundException("USER NOT VALID");
         }
 
@@ -95,7 +96,7 @@ public class TokenService {
         Users user = usersRepository.findByEmail(users.getEmail());
         //if (!this.passwordEncoder.matches(resource.getPassword(), user.getPassword())) {
 
-        if (!passwordEncoder.matches(users.getPassword(), user.getPassword())){
+        if (!passwordEncoder.matches(users.getPassword(), user.getPassword())) {
             throw new UserPrincipalNotFoundException("USER CREDENTIALS NOT MATCH");
         }
 
@@ -114,6 +115,7 @@ public class TokenService {
 
         return tokenObject;
     }
+
     //Plutot dans le controller
     public UserDto getMe(Authentication authentication) {
         Users user = usersRepository.findByEmail(authentication.getName());
@@ -129,7 +131,8 @@ public class TokenService {
         return userDto;
 
     }
-    private Authentication getAuth(Authentication authentication){
+
+    private Authentication getAuth(Authentication authentication) {
         return authentication;
     }
 
