@@ -15,8 +15,8 @@ import java.sql.Timestamp;
 @RequiredArgsConstructor
 public class UserDto {
     private Integer id;
-    private String email;
     private String name;
+    private String email;
     private Timestamp created_at;
     private Timestamp updated_at;
 }
