@@ -5,6 +5,7 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 
+//Reponse des requettes rentals
 @Getter
 @Setter
 @AllArgsConstructor

@@ -7,6 +7,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 import java.util.Collection;
 
+//Classe traité par la Couche logique de springframework
 public class CustomerUserDetails implements UserDetails {
 
     private final Users users;

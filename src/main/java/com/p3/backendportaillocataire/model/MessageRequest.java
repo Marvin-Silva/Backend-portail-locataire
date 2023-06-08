@@ -5,6 +5,7 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 
+//Pour l'envoie d'un message au proprietaire
 @Getter
 @Setter
 @RequiredArgsConstructor

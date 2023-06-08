@@ -8,6 +8,7 @@ import lombok.RequiredArgsConstructor;
 
 import java.sql.Timestamp;
 
+//Cible les données des users
 @Builder
 @Getter
 @Setter
