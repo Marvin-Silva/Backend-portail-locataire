@@ -10,14 +10,10 @@ import java.util.Optional;
 
 @Service
 public class RentalService {
-    private RentalsRepository rentalsRepository;
+    private final RentalsRepository rentalsRepository;
 
     public RentalService(RentalsRepository rentalsRepository) {
         this.rentalsRepository = rentalsRepository;
-    }
-
-    public Rental findRentalsByName(String name) {
-        return rentalsRepository.findByName(name);
     }
 
     public List<Rental> findAllRentals() {
