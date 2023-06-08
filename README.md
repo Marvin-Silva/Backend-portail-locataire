@@ -1,4 +1,4 @@
-# Portail-Locataire API
+># Portail-Locataire API
 
 Pour utiliser l'application il faut d'abord respecter quelques pré-requis
 
@@ -14,14 +14,20 @@ Pour utiliser l'application il faut d'abord respecter quelques pré-requis
 
 Renseigner l'application properties
 
-* Configuration Standard
-> spring.datasource.url=jdbc:mysql://localhost:3306/rentals ....
+>Configuration Standard
+* spring.datasource.url=jdbc:mysql://localhost:3306/rentals ....
 
-* Ajouter l'environnement de variable
-> ${MYSQL_PWD}
+> Ajouter l'environnement de variable
+* ${MYSQL_PWD}
 
-* Ajouter les clés pour chiffrer le token
-> rsa.privateKey=classpath:certs/private
-rsa.publicKey=classpath:certs/public.pub
+> Ajouter les clés pour chiffrer le token
+* rsa.privateKey=classpath:certs/private
+* rsa.publicKey=classpath:certs/public.pub
+
+> Pour acceder la documentation swagger
+
+* http://localhost:8080/swagger-ui/
+
+* http://localhost:8080/v2/api-docs
 
 #### Il ne reste qu'à Lancer le serveur et voilà !!!
