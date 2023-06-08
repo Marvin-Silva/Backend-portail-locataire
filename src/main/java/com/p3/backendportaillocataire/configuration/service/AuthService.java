@@ -1,15 +1,15 @@
 package com.p3.backendportaillocataire.configuration.service;
 
 import com.p3.backendportaillocataire.configuration.model.Token;
-import com.p3.backendportaillocataire.model.dto.UserDto;
 import com.p3.backendportaillocataire.model.Users;
+import com.p3.backendportaillocataire.model.dto.UserDto;
 import com.p3.backendportaillocataire.repository.UsersRepository;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.security.oauth2.jwt.*;
+import org.springframework.security.oauth2.jwt.JwtClaimsSet;
+import org.springframework.security.oauth2.jwt.JwtEncoder;
+import org.springframework.security.oauth2.jwt.JwtEncoderParameters;
 import org.springframework.stereotype.Service;
 
 import java.nio.file.attribute.UserPrincipalNotFoundException;
@@ -17,40 +17,28 @@ import java.sql.Timestamp;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 
+//Routes pour l'authentication
 @Service
-public class TokenService {
+public class AuthService {
 
     private final JwtEncoder encoder;
-
-    private final JwtDecoder decoder;
     private final UsersRepository usersRepository;
 
     private final BCryptPasswordEncoder passwordEncoder;
 
     private final AuthenticationProvider authenticationProvider;
 
-    private final UserDetailsService userDetailsService;
-
-    public TokenService(JwtEncoder encoder, JwtDecoder decoder, UsersRepository usersRepository, BCryptPasswordEncoder passwordEncoder, AuthenticationProvider authenticationProvider, UserDetailsService userDetailsService) {
-        this.encoder = encoder;
-        this.decoder = decoder;
+    public AuthService(JwtEncoder encoder, UsersRepository usersRepository, BCryptPasswordEncoder passwordEncoder, AuthenticationProvider authenticationProvider) {
         this.usersRepository = usersRepository;
         this.passwordEncoder = passwordEncoder;
         this.authenticationProvider = authenticationProvider;
-        this.userDetailsService = userDetailsService;
+        this.encoder = encoder;
     }
 
     public String generateToken(Users users) {
 
         Instant now = Instant.now();
-        // Header access control
-        /*
-        String scope = authentication.getAuthorities().stream()
-                .map(GrantedAuthority::getAuthority)
-                .collect(Collectors.joining(""));
-        */
 
-        // Payload
         JwtClaimsSet claims = JwtClaimsSet.builder()
                 .issuer("self")
                 .issuedAt(now)
@@ -75,9 +63,7 @@ public class TokenService {
             throw new UserPrincipalNotFoundException("USER NOT VALID");
         }
 
-        Authentication tokenInfo =
-                new UsernamePasswordAuthenticationToken(
-                        buildUser.getEmail(), buildUser.getPassword());
+        new UsernamePasswordAuthenticationToken(buildUser.getEmail(), buildUser.getPassword());
 
         String token = generateToken(buildUser);
         Token tokenObject = Token.builder().token(token).build();
@@ -86,7 +72,6 @@ public class TokenService {
         return tokenObject;
     }
 
-    //Implementer
     public Token login(Users users) throws UserPrincipalNotFoundException {
 
         if (users.getEmail().isBlank()) {
@@ -94,7 +79,6 @@ public class TokenService {
         }
 
         Users user = usersRepository.findByEmail(users.getEmail());
-        //if (!this.passwordEncoder.matches(resource.getPassword(), user.getPassword())) {
 
         if (!passwordEncoder.matches(users.getPassword(), user.getPassword())) {
             throw new UserPrincipalNotFoundException("USER CREDENTIALS NOT MATCH");
@@ -105,9 +89,7 @@ public class TokenService {
                 .password(user.getPassword())
                 .build();
 
-        Authentication authentication = authenticationProvider.authenticate(new UsernamePasswordAuthenticationToken(isAuthenticated.getEmail(), isAuthenticated.getPassword()));
-
-        getAuth(authentication);
+        authenticationProvider.authenticate(new UsernamePasswordAuthenticationToken(isAuthenticated.getEmail(), isAuthenticated.getPassword()));
 
         String token = generateToken(user);
 
@@ -117,8 +99,8 @@ public class TokenService {
     }
 
     //Plutot dans le controller
-    public UserDto getMe(Authentication authentication) {
-        Users user = usersRepository.findByEmail(authentication.getName());
+    public UserDto getMe(Users users) {
+        Users user = usersRepository.findByEmail(users.getEmail());
 
         UserDto userDto = UserDto.builder()
                 .id(user.getId())
@@ -130,10 +112,6 @@ public class TokenService {
 
         return userDto;
 
-    }
-
-    private Authentication getAuth(Authentication authentication) {
-        return authentication;
     }
 
 }
