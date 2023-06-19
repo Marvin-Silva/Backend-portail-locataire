@@ -5,6 +5,7 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 
+//Pour l'affichage de la list de rentals
 @Getter
 @Setter
 @AllArgsConstructor

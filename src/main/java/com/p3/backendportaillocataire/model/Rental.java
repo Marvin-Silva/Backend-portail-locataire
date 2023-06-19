@@ -1,8 +1,15 @@
 package com.p3.backendportaillocataire.model;
 
-import lombok.*;
-
-import javax.persistence.*;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
+import lombok.Builder;
+import javax.persistence.Entity;
+import javax.persistence.Table;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
 import java.util.Date;
 
 @Entity

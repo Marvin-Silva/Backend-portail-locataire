@@ -2,7 +2,6 @@ package com.p3.backendportaillocataire.service;
 
 import com.p3.backendportaillocataire.model.MessageRequest;
 import com.p3.backendportaillocataire.model.MessageResponse;
-import com.p3.backendportaillocataire.model.Rental;
 import com.p3.backendportaillocataire.model.Users;
 import com.p3.backendportaillocataire.model.dto.UserDto;
 import com.p3.backendportaillocataire.repository.UsersRepository;
@@ -21,10 +20,10 @@ public class UserService {
 
     public MessageResponse requestMessage(MessageRequest messageRequest) {
 
-        //Get User id
-        Optional<Users> user_id = usersRepository.findById(messageRequest.getUser_id());
-        //Get Rentals Id
-        messageRequest.setRentals_id(new Rental().getId());
+        MessageRequest request = new MessageRequest();
+        request.setUser_id(messageRequest.getUser_id());
+        request.setRentals_id(messageRequest.getRentals_id());
+        request.setMessage(messageRequest.getMessage());
 
         return new MessageResponse("Message send with success");
     }

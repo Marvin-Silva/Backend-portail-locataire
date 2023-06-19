@@ -37,6 +37,7 @@ public class SpringSecurityConfig {
         this.rsaKeys = rsaKeys;
     }
 
+    //Permet de dire à Spring quel canau d'authentication des utilisateurs
     @Bean
     AuthenticationProvider authenticationProvider() {
         DaoAuthenticationProvider provider = new DaoAuthenticationProvider();
@@ -45,6 +46,7 @@ public class SpringSecurityConfig {
         return provider;
     }
 
+    // Regles pour les requettes
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http.cors(cors -> cors.disable()).csrf(csrf -> csrf.disable())
@@ -58,15 +60,18 @@ public class SpringSecurityConfig {
                                 "api/auth/me", "api/rentals/{id}", "api/rentals", "api/rentals/**",
                                 "user/id", "api/messages").permitAll()
                         .anyRequest().authenticated())
+                //Session deconnecté du client
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                //Bearer token demandé pour les requettes configuré
                 .oauth2ResourceServer(OAuth2ResourceServerConfigurer::jwt)
                 .exceptionHandling(ex -> ex
                         .authenticationEntryPoint(new BearerTokenAuthenticationEntryPoint()))
+                //Demande d'authentication utilisateur pour faire des requettes
                 .authenticationProvider(authenticationProvider());
         return http.build();
     }
 
-
+    //Encodage et decodage du token avec les rsaKeys
     @Bean
     public JwtDecoder jwtDecoder() {
         return NimbusJwtDecoder.withPublicKey(rsaKeys.getPublicKey()).build();
@@ -79,26 +84,10 @@ public class SpringSecurityConfig {
         return new NimbusJwtEncoder(jwks);
     }
 
+    //Password encodé
     @Bean
     BCryptPasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
     }
 
-    /*@Bean
-    public CorsConfigurationSource allowedCors(){
-        CorsConfiguration corsConfiguration = new CorsConfiguration();
-        corsConfiguration.setAllowedOrigins(Arrays.asList("http://localhost:4002/api/**", "http://localhost:4002"));
-        corsConfiguration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE"));
-        corsConfiguration.setMaxAge(300L);
-
-        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
-        source.registerCorsConfiguration("/**", corsConfiguration);
-        return source;
-    }
-
-    @Bean
-    public CorsFilter corsFilter(){
-        CorsFilter filter = new CorsFilter(allowedCors());
-        return filter;
-    }*/
 }
