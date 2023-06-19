@@ -73,7 +73,6 @@ Renseigner l'application properties
 * POST: /api/messages - Send messages to rentals owner
 * GET: /api/user/{id} - Specify user to get
 
-
 ### Swagger
 > Pour acceder la documentation swagger
 
