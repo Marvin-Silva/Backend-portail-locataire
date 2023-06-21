@@ -16,6 +16,8 @@ import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.multipart.MultipartHttpServletRequest;
 
 import java.io.IOException;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.List;
 import java.util.Optional;
 
@@ -54,12 +56,16 @@ public class RentalController {
 
         MultipartFile picture = request.getFile("picture");
 
+        Path folderPath = Paths.get("src/main/resources/static");
+        Path filePath = folderPath.resolve(picture.getOriginalFilename());
+        picture.transferTo(filePath);
+
         Rental rental = Rental.builder()
                 .name(name)
                 .surface(surface)
                 .price(price)
                 .description(description)
-                .picture("https://blog.technavio.org/wp-content/uploads/2018/12/" + picture.getOriginalFilename())
+                .picture("http:localhost:8080/"+filePath.getFileName().toString())
                 .build();
         return rentalService.createRentals(rental);
     }

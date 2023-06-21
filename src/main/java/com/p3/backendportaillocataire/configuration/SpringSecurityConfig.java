@@ -53,7 +53,8 @@ public class SpringSecurityConfig {
                 .authorizeHttpRequests(auth -> auth
 
                         //Public Routes
-                        .antMatchers("/v2/api-docs", "/swagger-ui/**", "/swagger-resources/**", "/swagger-ui.html", "/webjars/springfox-swagger-ui/**").permitAll()
+                        .antMatchers("/v2/api-docs", "/swagger-ui/**", "/swagger-resources/**", "/swagger-ui.html",
+                                "/webjars/springfox-swagger-ui/**","/Online-House-Rental-Sites.jpg").permitAll()
 
                         //Private Routes
                         .mvcMatchers("api/auth/token", "api/auth/register", "api/auth/login",
