@@ -55,7 +55,7 @@ public class AuthService {
         Users buildUser = Users.builder()
                 .email(users.getEmail())
                 .username(users.getUsername())
-                .password(passwordEncoder.encode(users.getPassword()))
+                .password(users.getPassword())
                 .created_at(Timestamp.from(Instant.now()))
                 .build();
 

@@ -37,7 +37,7 @@ public class SpringSecurityConfig {
         this.rsaKeys = rsaKeys;
     }
 
-    //Permet de dire à Spring quel canau d'authentication des utilisateurs
+    //Permet de dire à Spring le canal d'authentication des utilisateurs
     @Bean
     AuthenticationProvider authenticationProvider() {
         DaoAuthenticationProvider provider = new DaoAuthenticationProvider();
@@ -90,5 +90,4 @@ public class SpringSecurityConfig {
     BCryptPasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
     }
-
 }
